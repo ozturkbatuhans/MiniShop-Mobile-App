@@ -1,22 +1,22 @@
+import React, { useState } from "react";
 import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
-import React, { useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-
-import { useColorScheme } from "../hooks/use-color-scheme";
 
 import { Provider } from "react-redux";
 import store from "@/store/store";
+
+import { ThemeProviderCustom, useAppTheme } from "@/context/ThemeContext";
 
 export const unstable_settings = {
   anchor: "(tabs)",
 };
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
+function AppShell() {
+  const { colorScheme } = useAppTheme();
 
   const [queryClient] = useState(
     () =>
@@ -32,19 +32,29 @@ export default function RootLayout() {
   );
 
   return (
-     <Provider store={store}>
-    <QueryClientProvider client={queryClient}>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="modal"
-            options={{ presentation: "modal", title: "Modal" }}
-          />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
-    </QueryClientProvider>
+    <Provider store={store}>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+          <Stack>
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen
+              name="modal"
+              options={{ presentation: "modal", title: "Modal" }}
+            />
+          </Stack>
+
+          <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
+        </ThemeProvider>
+      </QueryClientProvider>
     </Provider>
   );
 }
+
+export default function RootLayout() {
+  return (
+    <ThemeProviderCustom>
+      <AppShell />
+    </ThemeProviderCustom>
+  );
+}
+

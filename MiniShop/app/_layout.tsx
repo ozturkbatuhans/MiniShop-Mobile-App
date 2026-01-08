@@ -8,6 +8,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { useColorScheme } from "../hooks/use-color-scheme";
 
+import { Provider } from "react-redux";
+import store from "@/store/store";
+
 export const unstable_settings = {
   anchor: "(tabs)",
 };
@@ -29,6 +32,7 @@ export default function RootLayout() {
   );
 
   return (
+     <Provider store={store}>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <Stack>
@@ -41,5 +45,6 @@ export default function RootLayout() {
         <StatusBar style="auto" />
       </ThemeProvider>
     </QueryClientProvider>
+    </Provider>
   );
 }

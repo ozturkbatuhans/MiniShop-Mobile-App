@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   ActivityIndicator,
@@ -14,11 +14,17 @@ import { getProductById } from "../../api/products";
 import { ThemedText } from "../../components/themed-text";
 import { ThemedView } from "../../components/themed-view";
 
+import { useAppDispatch } from "@/store/hooks";
+import { addToCart } from "@/slices/cartSlice";
+
 type ProductDetailParams = {
   id?: string | string[];
 };
 
 export default function ProductDetailScreen() {
+  const dispatch = useAppDispatch();
+  const [added, setAdded] = useState(false);
+
   const params = useLocalSearchParams<ProductDetailParams>();
   const idParam = Array.isArray(params.id) ? params.id[0] : params.id;
 
@@ -73,6 +79,25 @@ export default function ProductDetailScreen() {
             <ThemedText>{data.description}</ThemedText>
             <ThemedText type="defaultSemiBold">€ {data.price}</ThemedText>
 
+            <Pressable
+              style={({ pressed }) => [
+                styles.addButton,
+                pressed && styles.addButtonPressed,
+              ]}
+              onPress={() => {
+                dispatch(addToCart(data));
+                setAdded(true);
+                setTimeout(() => setAdded(false), 1000);
+              }}
+            >
+              <ThemedText type="defaultSemiBold">
+                {added ? "Added!" : "Add to Cart"}
+              </ThemedText>
+            </Pressable>
+
+            {added && (
+              <ThemedText style={styles.addedText}>Item added to cart.</ThemedText>
+            )}
           </ThemedView>
         )}
       </View>
@@ -107,5 +132,24 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 1,
     borderColor: "rgba(150,150,150,0.35)",
+  },
+
+  addButton: {
+    marginTop: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.12)",
+    alignSelf: "flex-start",
+  },
+
+  addButtonPressed: {
+    opacity: 0.7,
+  },
+
+  addedText: {
+    marginTop: 6,
+    opacity: 0.8,
   },
 });

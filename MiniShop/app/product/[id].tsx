@@ -58,7 +58,7 @@ export default function ProductDetailScreen() {
               {error instanceof Error ? error.message : "Unknown error"}
             </ThemedText>
 
-            <Pressable style={styles.retryButton} onPress={() => refetch()}>
+            <Pressable style={styles.button} onPress={() => refetch()}>
               <ThemedText type="defaultSemiBold">Try again</ThemedText>
             </Pressable>
           </ThemedView>
@@ -68,7 +68,14 @@ export default function ProductDetailScreen() {
           </ThemedView>
         ) : (
           <ThemedView style={styles.content}>
-            <ThemedText type="title">{data.title}</ThemedText>
+            <View style={styles.headerRow}>
+              <ThemedText type="title" style={styles.title} numberOfLines={2}>
+                {data.title}
+              </ThemedText>
+              <ThemedText type="defaultSemiBold" style={styles.price}>
+                € {data.price}
+              </ThemedText>
+            </View>
 
             <Image
               source={{ uri: data.images?.[0] ?? data.thumbnail }}
@@ -76,13 +83,12 @@ export default function ProductDetailScreen() {
               resizeMode="contain"
             />
 
-            <ThemedText>{data.description}</ThemedText>
-            <ThemedText type="defaultSemiBold">€ {data.price}</ThemedText>
+            <ThemedText style={styles.muted}>{data.description}</ThemedText>
 
             <Pressable
               style={({ pressed }) => [
                 styles.addButton,
-                pressed && styles.addButtonPressed,
+                pressed && styles.pressed,
               ]}
               onPress={() => {
                 dispatch(addToCart(data));
@@ -96,7 +102,9 @@ export default function ProductDetailScreen() {
             </Pressable>
 
             {added && (
-              <ThemedText style={styles.addedText}>Item added to cart.</ThemedText>
+              <ThemedText style={styles.addedText}>
+                Item added to cart.
+              </ThemedText>
             )}
           </ThemedView>
         )}
@@ -118,38 +126,57 @@ const styles = StyleSheet.create({
 
   content: { gap: 12 },
 
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    justifyContent: "space-between",
+    gap: 12,
+  },
+
+  title: {
+    flex: 1,
+  },
+
+  price: {
+    opacity: 0.9,
+  },
+
   image: {
     width: "100%",
-    height: 260,
-    borderRadius: 12,
+    height: 280,
+    borderRadius: 14,
     backgroundColor: "rgba(255,255,255,0.06)",
   },
 
-  retryButton: {
+  muted: {
+    opacity: 0.85,
+    lineHeight: 20,
+  },
+
+  button: {
     marginTop: 10,
     paddingVertical: 10,
     paddingHorizontal: 14,
-    borderRadius: 10,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: "rgba(150,150,150,0.35)",
   },
 
   addButton: {
-    marginTop: 8,
+    marginTop: 6,
     paddingVertical: 12,
     paddingHorizontal: 14,
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
     borderColor: "rgba(255,255,255,0.12)",
     alignSelf: "flex-start",
   },
 
-  addButtonPressed: {
-    opacity: 0.7,
-  },
+  pressed: { opacity: 0.75 },
 
   addedText: {
-    marginTop: 6,
+    marginTop: 4,
     opacity: 0.8,
   },
 });
+

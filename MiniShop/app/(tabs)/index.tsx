@@ -6,6 +6,7 @@ import {
   ActivityIndicator,
   Image,
   View,
+  useColorScheme,
 } from "react-native";
 import { Link } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
@@ -39,7 +40,7 @@ export default function ProductListScreen() {
           {error instanceof Error ? error.message : "Unknown error"}
         </ThemedText>
 
-        <Pressable style={styles.retryButton} onPress={() => refetch()}>
+        <Pressable style={styles.button} onPress={() => refetch()}>
           <ThemedText type="defaultSemiBold">Try again</ThemedText>
         </Pressable>
       </ThemedView>
@@ -74,6 +75,9 @@ export default function ProductListScreen() {
 }
 
 function ProductCard({ product }: { product: Product }) {
+  const scheme = useColorScheme();
+  const isDark = scheme === "dark";
+
   return (
     <Link
       href={
@@ -81,17 +85,33 @@ function ProductCard({ product }: { product: Product }) {
       }
       asChild
     >
-      <Pressable style={styles.card}>
-        <Image source={{ uri: product.thumbnail }} style={styles.thumb} />
+      <Pressable
+        style={({ pressed }) => [
+          styles.card,
+          isDark ? styles.cardDark : styles.cardLight,
+          styles.shadowCard,
+          pressed && styles.pressed,
+        ]}
+      >
+        <Image
+          source={{ uri: product.thumbnail }}
+          style={styles.thumb}
+          resizeMode="cover"
+        />
 
         <View style={styles.cardBody}>
           <ThemedText type="defaultSemiBold" numberOfLines={1}>
             {product.title}
           </ThemedText>
 
-          <ThemedText numberOfLines={2}>{product.description}</ThemedText>
+          <ThemedText numberOfLines={2} style={styles.muted}>
+            {product.description}
+          </ThemedText>
 
-          <ThemedText type="defaultSemiBold">€ {product.price}</ThemedText>
+          <View style={styles.priceRow}>
+            <ThemedText type="defaultSemiBold">€ {product.price}</ThemedText>
+            <ThemedText style={styles.linkHint}>View</ThemedText>
+          </View>
         </View>
       </Pressable>
     </Link>
@@ -121,16 +141,35 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 12,
     padding: 14,
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
-    borderColor: "rgba(150,150,150,0.25)",
+    borderColor: "rgba(150,150,150,0.18)",
     alignItems: "center",
   },
 
+  cardLight: {
+    backgroundColor: "rgba(255,255,255,1)",
+  },
+
+  cardDark: {
+    backgroundColor: "rgba(255,255,255,0.06)",
+  },
+
+  shadowCard: {
+    shadowColor: "#000",
+    shadowOpacity: 0.10,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 3,
+  },
+
+  pressed: { opacity: 0.75 },
+
   thumb: {
-    width: 64,
-    height: 64,
-    borderRadius: 10,
+    width: 76,
+    height: 76,
+    borderRadius: 14,
+    backgroundColor: "rgba(0,0,0,0.06)",
   },
 
   cardBody: {
@@ -138,12 +177,28 @@ const styles = StyleSheet.create({
     gap: 6,
   },
 
-  retryButton: {
+  muted: {
+    opacity: 0.8,
+  },
+
+  priceRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 2,
+  },
+
+  linkHint: {
+    opacity: 0.7,
+  },
+
+  button: {
     marginTop: 10,
     paddingVertical: 10,
     paddingHorizontal: 14,
-    borderRadius: 10,
+    borderRadius: 12,
     borderWidth: 1,
     borderColor: "rgba(150,150,150,0.35)",
   },
 });
+

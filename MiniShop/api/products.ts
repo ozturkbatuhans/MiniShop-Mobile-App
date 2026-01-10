@@ -1,42 +1,40 @@
-import type { Product, ProductsResponse } from "../types/product";
+import type { Product } from "@/types/product";
+
+export type ProductsResponse = {
+  products: Product[];
+  total: number;
+  skip: number;
+  limit: number;
+};
 
 const BASE_URL = "https://dummyjson.com";
 
-async function fetchJson<T>(url: string, timeoutMs = 8000): Promise<T> {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
-
-  try {
-    const res = await fetch(url, { signal: controller.signal });
-
-    if (!res.ok) {
-      const text = await res.text();
-      throw new Error(`Request failed (${res.status}): ${text}`);
-    }
-
-    return (await res.json()) as T;
-  } catch (err) {
-    const message =
-      err instanceof Error ? err.message : "Unknown network error";
-
-    if (message.includes("AbortError") || message.includes("aborted")) {
-      throw new Error("Request timed out. Please try again.");
-    }
-
-    if (message.toLowerCase().includes("network")) {
-      throw new Error("Network request failed. Please check your connection.");
-    }
-
-    throw err instanceof Error ? err : new Error("Unknown error");
-  } finally {
-    clearTimeout(timeoutId);
+async function fetchJson<T>(url: string): Promise<T> {
+  const res = await fetch(url);
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || `Request failed (${res.status})`);
   }
+  return (await res.json()) as T;
 }
 
-export function getProducts(): Promise<ProductsResponse> {
-  return fetchJson<ProductsResponse>(`${BASE_URL}/products`);
+export async function getProducts(params?: { limit?: number; skip?: number }): Promise<ProductsResponse> {
+  const limit = params?.limit ?? 30;
+  const skip = params?.skip ?? 0;
+  return fetchJson<ProductsResponse>(`${BASE_URL}/products?limit=${limit}&skip=${skip}`);
 }
 
-export function getProductById(id: number): Promise<Product> {
+export async function searchProducts(params: {
+  q: string;
+  limit?: number;
+  skip?: number;
+}): Promise<ProductsResponse> {
+  const limit = params.limit ?? 30;
+  const skip = params.skip ?? 0;
+  const q = encodeURIComponent(params.q);
+  return fetchJson<ProductsResponse>(`${BASE_URL}/products/search?q=${q}&limit=${limit}&skip=${skip}`);
+}
+
+export async function getProductById(id: number): Promise<Product> {
   return fetchJson<Product>(`${BASE_URL}/products/${id}`);
 }

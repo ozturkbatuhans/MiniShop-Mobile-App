@@ -38,7 +38,7 @@ function AppShell() {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
           <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="(tabs)" options={{ headerShown: false, title: "Home" }} />
             <Stack.Screen
               name="modal"
               options={{ presentation: "modal", title: "Modal" }}

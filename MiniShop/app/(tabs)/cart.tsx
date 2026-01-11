@@ -1,26 +1,12 @@
 import React from "react";
-import {
-  Alert,
-  FlatList,
-  Pressable,
-  StyleSheet,
-  View,
-  useColorScheme,
-} from "react-native";
+import { Alert, FlatList, Pressable, StyleSheet, View } from "react-native";
 
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import {
-  decreaseQuantity,
-  increaseQuantity,
-  removeItem,
-} from "@/slices/cartSlice";
-import {
-  selectCartItems,
-  selectSubtotal,
-  selectTotalItems,
-} from "@/selectors/cartSelectors";
+import { decreaseQuantity, increaseQuantity, removeItem } from "@/slices/cartSlice";
+import { selectCartItems, selectSubtotal, selectTotalItems } from "@/selectors/cartSelectors";
+import { useColorScheme } from "@/hooks/use-color-scheme";
 
 export default function CartScreen() {
   const scheme = useColorScheme();
@@ -68,11 +54,7 @@ export default function CartScreen() {
               return (
                 <ThemedView style={[styles.card, cardSurface, styles.shadowCard]}>
                   <View style={styles.topRow}>
-                    <ThemedText
-                      type="subtitle"
-                      style={styles.title}
-                      numberOfLines={1}
-                    >
+                    <ThemedText type="subtitle" style={styles.title} numberOfLines={1}>
                       {item.title}
                     </ThemedText>
                   </View>
@@ -230,5 +212,3 @@ const styles = StyleSheet.create({
 
   pressed: { opacity: 0.7 },
 });
-
-

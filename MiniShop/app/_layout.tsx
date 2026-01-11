@@ -10,6 +10,7 @@ import { Provider } from "react-redux";
 import store from "@/store/store";
 
 import { ThemeProviderCustom, useAppTheme } from "@/context/ThemeContext";
+import { CartStorageSync } from "@/store/cartStorageSync";
 
 export const unstable_settings = {
   anchor: "(tabs)",
@@ -33,6 +34,7 @@ function AppShell() {
 
   return (
     <Provider store={store}>
+      <CartStorageSync />
       <QueryClientProvider client={queryClient}>
         <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
           <Stack>
@@ -57,4 +59,3 @@ export default function RootLayout() {
     </ThemeProviderCustom>
   );
 }
-

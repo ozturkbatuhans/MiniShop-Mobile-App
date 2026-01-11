@@ -40,9 +40,12 @@ export default function ProductListScreen() {
       }
       return getProducts({ limit: 30, skip: 0 });
     },
+    placeholderData: (prev) => prev,
   });
 
   const products = query.data?.products ?? [];
+  const isInitialLoading = query.isPending && !query.data;
+  const isBackgroundFetching = query.isFetching && !!query.data;
 
   const header = useMemo(() => {
     return (
@@ -58,10 +61,7 @@ export default function ProductListScreen() {
               onChangeText={setSearchText}
               placeholder="Search products..."
               placeholderTextColor={theme.icon}
-              style={[
-                styles.searchInput,
-                { color: theme.text },
-              ]}
+              style={[styles.searchInput, { color: theme.text }]}
               autoCorrect={false}
               autoCapitalize="none"
               returnKeyType="search"
@@ -75,22 +75,37 @@ export default function ProductListScreen() {
                   { opacity: pressed ? 0.6 : 1, borderColor: theme.tint },
                 ]}
               >
-                <ThemedText style={{ color: theme.tint, fontWeight: "800" }}>Clear</ThemedText>
+                <ThemedText style={{ color: theme.tint, fontWeight: "800" }}>
+                  Clear
+                </ThemedText>
               </Pressable>
             )}
           </View>
 
-          {isSearching && (
-            <ThemedText style={{ marginTop: 8, opacity: 0.75 }}>
-              Showing results for: "{debouncedSearch}"
-            </ThemedText>
+          {(isSearching || isBackgroundFetching) && (
+            <View style={{ marginTop: 8, flexDirection: "row", alignItems: "center", gap: 8 }}>
+              {isBackgroundFetching && <ActivityIndicator size="small" />}
+              {isSearching && (
+                <ThemedText style={{ opacity: 0.75 }}>
+                  Showing results for: "{debouncedSearch}"
+                </ThemedText>
+              )}
+            </View>
           )}
         </Card>
       </View>
     );
-  }, [searchText, debouncedSearch, isSearching, theme.icon, theme.text, theme.tint]);
+  }, [
+    searchText,
+    debouncedSearch,
+    isSearching,
+    isBackgroundFetching,
+    theme.icon,
+    theme.text,
+    theme.tint,
+  ]);
 
-  if (query.isPending) {
+  if (isInitialLoading) {
     return (
       <ThemedView style={styles.center}>
         <ActivityIndicator />
@@ -126,9 +141,7 @@ export default function ProductListScreen() {
             {isSearching ? "No results" : "No products"}
           </ThemedText>
           <ThemedText style={{ opacity: 0.75, marginTop: 8, textAlign: "center" }}>
-            {isSearching
-              ? "Try a different search term."
-              : "The product list is empty."}
+            {isSearching ? "Try a different search term." : "The product list is empty."}
           </ThemedText>
 
           <PrimaryButton
@@ -150,6 +163,7 @@ export default function ProductListScreen() {
         ListHeaderComponent={header}
         contentContainerStyle={styles.list}
         renderItem={({ item }) => <ProductRow item={item} tint={theme.tint} />}
+        keyboardShouldPersistTaps="handled"
       />
     </ThemedView>
   );

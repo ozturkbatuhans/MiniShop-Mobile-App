@@ -1,6 +1,7 @@
 # MiniShop Mobile App
 
-Exam assignment for Mobile Application 2.
+MiniShop is a small mobile application built with **Expo (React Native)**.  
+The app displays a product list, allows searching, viewing product details, and managing a shopping cart.
 
 ## Tech stack
 - Expo + React Native
@@ -8,11 +9,16 @@ Exam assignment for Mobile Application 2.
 - Expo Router
 - TanStack Query
 - Redux Toolkit
+- AsyncStorage
 
 ## Features
-- Bottom tabs navigation (Home / Cart / Profile)
-- Product list screen
-- Product detail screen (dynamic routing)
+- Product list with search functionality
+- Product detail screen
+- Shopping cart (add, remove, update quantity)
+- Light / Dark theme toggle
+- Theme persistence using AsyncStorage
+- Cart persistence using AsyncStorage
+- Clean navigation using Expo Router
 
 ## How to run
 ```bash
